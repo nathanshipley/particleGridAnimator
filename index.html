@@ -447,6 +447,7 @@
                 <button onclick="togglePlayback()">Play/Pause</button>
                 <button onclick="resetAnimation()">Reset</button>
                 <button onclick="exportJSON()">Export JSON</button>
+                <button onclick="exportFrames()">Export Frames</button>
             </div>
             <div id="timelineContainer">
                 <div class="timeline-header">
@@ -553,6 +554,9 @@
             </div>
         </div>
     </div>
+    
+    <!-- Load JSZip from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     
     <script>
         // Wrap in IIFE to avoid global scope conflicts in Squarespace
@@ -954,6 +958,200 @@
                 a.click();
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
+            }
+
+            window.exportFrames = async function() {
+    // Check if JSZip is loaded
+    if (typeof JSZip === 'undefined') {
+        alert('Please wait for the page to fully load and try again.');
+        return;
+    }
+    
+    // Create progress indicator
+    const progressDiv = document.createElement('div');
+    progressDiv.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); color: white; padding: 20px; border-radius: 8px; z-index: 10000;';
+    progressDiv.innerHTML = '<h3>Exporting Frames...</h3><p id="exportProgress">Preparing...</p>';
+    document.body.appendChild(progressDiv);
+    
+    try {
+        const zip = new JSZip();
+        const folder = zip.folder('particle_animation_frames');
+        
+        // Store current frame to restore later
+        const originalFrame = currentFrame;
+        
+        // Export each frame
+        for (let frame = 0; frame < totalFrames; frame++) {
+            currentFrame = frame;
+            render();
+            
+            // Update progress
+            document.getElementById('exportProgress').textContent = `Processing frame ${frame + 1} of ${totalFrames}`;
+            
+            // Convert canvas to blob
+            const blob = await new Promise(resolve => {
+                canvas.toBlob(resolve, 'image/png');
+            });
+            
+            // Add to zip with padded frame number
+            const frameNumber = String(frame).padStart(4, '0');
+            folder.file(`frame_${frameNumber}.png`, blob);
+            
+            // Allow UI to update
+            await new Promise(resolve => setTimeout(resolve, 0));
+        }
+        
+        // Add a text file with animation info
+        const info = `Particle Animation Export
+========================
+Total Frames: ${totalFrames}
+FPS: ${fps}
+Duration: ${duration} seconds
+Canvas Size: ${canvasWidth}x${canvasHeight}
+Grid Size: ${document.getElementById('gridX').value}x${document.getElementById('gridY').value}
+
+Effects:
+- Wave: ${document.getElementById('waveEnabled').checked ? 'Enabled' : 'Disabled'}
+- Perlin Noise: ${document.getElementById('noiseEnabled').checked ? 'Enabled' : 'Disabled'}
+- Random: ${document.getElementById('randomEnabled').checked ? 'Enabled' : 'Disabled'}
+
+Created with Particle Grid Animator 
+https://nathanshipley.github.io/particleGridAnimator/
+
+by Nathan Shipley
+https://www.nathanshipley.com/`;
+        
+        folder.file('animation_info.txt', info);
+        
+        // Generate zip file
+        document.getElementById('exportProgress').textContent = 'Creating ZIP file...';
+        const zipBlob = await zip.generateAsync({
+            type: 'blob',
+            compression: 'DEFLATE',
+            compressionOptions: { level: 6 }
+        });
+        
+        // Download the zip
+        const url = URL.createObjectURL(zipBlob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'particle_animation_frames.zip';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        // Restore original frame
+        currentFrame = originalFrame;
+        render();
+        
+        // Remove progress indicator
+        document.body.removeChild(progressDiv);
+        
+    } catch (error) {
+        console.error('Error exporting frames:', error);
+        alert('Error exporting frames. Please try again.');
+        document.body.removeChild(progressDiv);
+        currentFrame = originalFrame;
+        render();
+    }
+}
+            
+            window.exportFrames = async function() {
+                // Check if JSZip is loaded
+                if (typeof JSZip === 'undefined') {
+                    alert('Please wait for the page to fully load and try again.');
+                    return;
+                }
+                
+                // Create progress indicator
+                const progressDiv = document.createElement('div');
+                progressDiv.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); color: white; padding: 20px; border-radius: 8px; z-index: 10000;';
+                progressDiv.innerHTML = '<h3>Exporting Frames...</h3><p id="exportProgress">Preparing...</p>';
+                document.body.appendChild(progressDiv);
+                
+                try {
+                    const zip = new JSZip();
+                    const folder = zip.folder('particle_animation_frames');
+                    
+                    // Store current frame to restore later
+                    const originalFrame = currentFrame;
+                    
+                    // Export each frame
+                    for (let frame = 0; frame < totalFrames; frame++) {
+                        currentFrame = frame;
+                        render();
+                        
+                        // Update progress
+                        document.getElementById('exportProgress').textContent = `Processing frame ${frame + 1} of ${totalFrames}`;
+                        
+                        // Convert canvas to blob
+                        const blob = await new Promise(resolve => {
+                            canvas.toBlob(resolve, 'image/png');
+                        });
+                        
+                        // Add to zip with padded frame number
+                        const frameNumber = String(frame).padStart(4, '0');
+                        folder.file(`frame_${frameNumber}.png`, blob);
+                        
+                        // Allow UI to update
+                        await new Promise(resolve => setTimeout(resolve, 0));
+                    }
+                    
+                    // Add a text file with animation info
+                    const info = `Particle Animation Export
+========================
+Total Frames: ${totalFrames}
+FPS: ${fps}
+Duration: ${duration} seconds
+Canvas Size: ${canvasWidth}x${canvasHeight}
+Grid Size: ${document.getElementById('gridX').value}x${document.getElementById('gridY').value}
+
+Effects:
+- Wave: ${document.getElementById('waveEnabled').checked ? 'Enabled' : 'Disabled'}
+- Perlin Noise: ${document.getElementById('noiseEnabled').checked ? 'Enabled' : 'Disabled'}
+- Random: ${document.getElementById('randomEnabled').checked ? 'Enabled' : 'Disabled'}
+
+Created with Particle Grid Animator 
+https://nathanshipley.github.io/particleGridAnimator/
+
+by Nathan Shipley
+https://www.nathanshipley.com/`;
+                    
+                    folder.file('animation_info.txt', info);
+                    
+                    // Generate zip file
+                    document.getElementById('exportProgress').textContent = 'Creating ZIP file...';
+                    const zipBlob = await zip.generateAsync({
+                        type: 'blob',
+                        compression: 'DEFLATE',
+                        compressionOptions: { level: 6 }
+                    });
+                    
+                    // Download the zip
+                    const url = URL.createObjectURL(zipBlob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'particle_animation_frames.zip';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    
+                    // Restore original frame
+                    currentFrame = originalFrame;
+                    render();
+                    
+                    // Remove progress indicator
+                    document.body.removeChild(progressDiv);
+                    
+                } catch (error) {
+                    console.error('Error exporting frames:', error);
+                    alert('Error exporting frames. Please try again.');
+                    document.body.removeChild(progressDiv);
+                    currentFrame = originalFrame;
+                    render();
+                }
             }
             
             // Timeline functions
