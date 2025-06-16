@@ -2,6 +2,7 @@
 
 This repo hosts the .HTML file for **Particle Grid Animator.**
 
-https://github.com/nathanshipley/particleGridAnimator
+Live site:
+https://nathanshipley.github.io/particleGridAnimator/
 
 Create simple particle animations with wave motion, Perlin noise, and random effects.
