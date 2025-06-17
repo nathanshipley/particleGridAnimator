@@ -5,294 +5,299 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Particle Grid Animator</title>
     <style>
-        /* Scoped styles for Squarespace compatibility */
-        .particle-animator-container {
+        /* Reset and base styles */
+        * {
             margin: 0;
             padding: 0;
-            background: #f5f5f5;
-            color: #333;
+            box-sizing: border-box;
+        }
+        
+        body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            max-width: 100%;
-            box-sizing: border-box;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            overflow: hidden;
+            height: 100vh;
         }
         
-        .particle-animator-container * {
-            box-sizing: border-box;
-        }
-        
-        /* Header Styles */
-        .particle-animator-header {
-            background: #2c3e50;
-            color: white;
-            padding: 30px 20px;
-            text-align: left;
-            margin-bottom: 20px;
-        }
-        
-        .particle-animator-header h1 {
-            margin: 0 0 10px 0;
-            font-size: 32px;
-            font-weight: 600;
-            color: white;
-        }
-        
-        .particle-animator-header .attribution {
-            margin: 0 0 20px 0;
-            font-size: 16px;
-            color: #ecf0f1;
-        }
-        
-        .particle-animator-header .attribution a {
-            color: #3498db;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-        
-        .particle-animator-header .attribution a:hover {
-            color: #5dade2;
-            text-decoration: underline;
-        }
-        
-        .particle-animator-header .description {
-            max-width: 800px;
-            line-height: 1.6;
-        }
-        
-        .particle-animator-header .description p {
-            margin: 0 0 10px 0;
-            color: #ecf0f1;
-        }
-        
-        .particle-animator-header .description strong {
-            color: white;
-        }
-        
-        .particle-animator-header .description a {
-            color: #3498db;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-        
-        .particle-animator-header .description a:hover {
-            color: #5dade2;
-            text-decoration: underline;
-        }
-        
-        /* Main Content Area */
-        .particle-animator-main {
+        /* Main container */
+        .app-container {
             display: flex;
-            gap: 20px;
-            padding: 0 20px 20px;
+            flex-direction: column;
+            height: 100vh;
         }
         
-        .particle-animator-container #visualizerContainer {
-            flex: 1;
-            min-width: 0;
+        /* Collapsible Header */
+        .header {
+            background: #2c3e50;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            cursor: pointer;
         }
         
-        .particle-animator-container #canvasContainer {
-            background: #000;
-            border: 1px solid #ddd;
-            position: relative;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 720px;
-            margin: 0 auto;
+        .header.collapsed {
+            height: 40px;
         }
         
-        .particle-animator-container canvas {
-            display: block;
-            width: 100%;
+        .header.expanded {
             height: auto;
         }
         
-        .particle-animator-container #playbackControls {
-            background: #fff;
-            padding: 15px;
-            margin-top: 10px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            text-align: center;
+        .header-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            height: 40px;
+            user-select: none;
         }
         
-        .particle-animator-container #timelineContainer {
-            background: #fff;
-            padding: 20px;
-            margin-top: 10px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 720px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        .particle-animator-container #controls {
-            flex: 0 0 300px;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            max-height: calc(100vh - 40px);
-            overflow-y: auto;
-        }
-        
-        .particle-animator-container .control-group {
-            margin-bottom: 20px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .particle-animator-container .control-group:last-child {
-            border-bottom: none;
-        }
-        
-        .particle-animator-container h2 {
-            margin: 0 0 10px 0;
-            font-size: 18px;
-            color: #333;
-        }
-        
-        .particle-animator-container h3 {
-            margin: 15px 0 10px 0;
-            font-size: 14px;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .particle-animator-container label {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 14px;
-            color: #555;
-        }
-        
-        .particle-animator-container input[type="range"] {
-            width: 100%;
-            margin-bottom: 5px;
-        }
-        
-        .particle-animator-container input[type="number"] {
-            width: 100%;
-            padding: 5px;
-            background: #f8f8f8;
-            border: 1px solid #ddd;
-            color: #333;
-            border-radius: 4px;
-            margin-bottom: 10px;
-        }
-        
-        .particle-animator-container button {
-            background: #4a90e2;
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+            font-weight: 600;
             color: white;
-            border: none;
-            padding: 10px 20px;
+        }
+        
+        .header-arrow {
+            transition: transform 0.3s ease;
+            font-size: 12px;
+        }
+        
+        .header.expanded .header-arrow {
+            transform: rotate(180deg);
+        }
+        
+        .header-content {
+            padding: 0 20px 20px;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+        
+        .header.expanded .header-content {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .header-content p {
+            margin: 10px 0;
+            color: #ecf0f1;
+            line-height: 1.6;
+        }
+        
+        .header-content a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        
+        .header-content a:hover {
+            color: #5dade2;
+            text-decoration: underline;
+        }
+        
+        /* Workspace */
+        .workspace {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+            background: #1a1a1a;
+            position: relative;
+        }
+        
+        /* Left panel - Preview and controls */
+        .left-panel {
+            flex: 0 0 60%;
+            display: flex;
+            flex-direction: column;
+            min-width: 300px;
+            background: #222;
+            position: relative;
+        }
+        
+        /* Right panel - Timeline and parameters */
+        .right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #222;
+            min-width: 500px;
+            border-left: 1px solid #333;
+        }
+        
+        /* Divider */
+        .panel-divider {
+            position: absolute;
+            right: -4px;
+            top: 0;
+            bottom: 0;
+            width: 8px;
+            background: #4a90e2;
+            cursor: col-resize;
+            z-index: 100;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+        
+        .panel-divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 2px;
+            height: 40px;
+            background: #fff;
+            border-radius: 1px;
+        }
+        
+        .panel-divider:hover {
+            opacity: 0.8;
+        }
+        
+        .panel-divider.dragging {
+            opacity: 1;
+        }
+        
+        /* Preview container */
+        .preview-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #1a1a1a;
+        }
+        
+        .preview-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 16px;
+            background: #2a2a2a;
+            border-bottom: 1px solid #333;
+        }
+        
+        .preview-controls {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .zoom-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #999;
+            font-size: 12px;
+        }
+        
+        .zoom-controls select {
+            background: #333;
+            color: #e0e0e0;
+            border: 1px solid #444;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        
+        .preview-viewport {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: auto;
+            background: #1a1a1a;
+            position: relative;
+        }
+        
+        .canvas-wrapper {
+            position: relative;
+            background: #000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+        
+        #canvas {
+            display: block;
+            image-rendering: pixelated;
+        }
+        
+        .frame-info {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-family: monospace;
+        }
+        
+        /* Playback controls */
+        .playback-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: #2a2a2a;
+            border-top: 1px solid #333;
+        }
+        
+        .playback-button {
+            background: #3a3a3a;
+            border: 1px solid #444;
+            color: #e0e0e0;
+            padding: 6px 12px;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 14px;
-            margin-right: 10px;
-            margin-bottom: 10px;
-            transition: background 0.2s;
+            font-size: 12px;
+            transition: all 0.2s;
         }
         
-        .particle-animator-container button:hover {
-            background: #357abd;
+        .playback-button:hover {
+            background: #4a4a4a;
+            border-color: #555;
         }
         
-        .particle-animator-container button:active {
+        .playback-button:active {
             transform: translateY(1px);
         }
         
-        .particle-animator-container button.small {
-            padding: 5px 10px;
-            font-size: 12px;
-        }
-        
-        .particle-animator-container .value-display {
-            font-size: 12px;
-            color: #666;
-            margin-left: 5px;
-        }
-        
-        .particle-animator-container #info {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            font-size: 12px;
-            color: #fff;
-            background: rgba(0,0,0,0.7);
-            padding: 5px 10px;
-            border-radius: 4px;
-        }
-        
-        .particle-animator-container .checkbox-group {
+        /* Timeline header */
+        .timeline-header {
             display: flex;
             align-items: center;
-            margin-bottom: 10px;
-        }
-        
-        .particle-animator-container input[type="checkbox"] {
-            margin-right: 8px;
-        }
-        
-        .particle-animator-container input[type="color"] {
-            width: 100%;
-            height: 40px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        
-        /* Timeline Styles */
-        .particle-animator-container .timeline-header {
-            display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
+            padding: 8px 16px;
+            background: #2a2a2a;
+            border-bottom: 1px solid #333;
         }
         
-        .particle-animator-container .timeline-track {
-            margin-bottom: 15px;
-            background: #f8f8f8;
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            padding: 5px;
-        }
-        
-        .particle-animator-container .track-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 5px;
-            padding: 0 5px;
-        }
-        
-        .particle-animator-container .track-name {
-            font-size: 12px;
+        .timeline-title {
+            font-size: 14px;
             font-weight: 600;
-            color: #555;
         }
         
-        .particle-animator-container .track-controls {
+        /* Timeline container */
+        .timeline-container {
+            flex: 1;
             display: flex;
-            gap: 5px;
+            flex-direction: column;
+            overflow-y: auto;
+            background: #1a1a1a;
         }
         
-        .particle-animator-container .timeline-ruler {
+        /* Timeline ruler */
+        .timeline-ruler {
             height: 30px;
-            background: #333;
-            border-radius: 3px;
+            background: #2a2a2a;
+            border-bottom: 1px solid #333;
             position: relative;
-            margin-bottom: 10px;
             cursor: pointer;
+            margin-left: 262px; /* 150px label + 80px value + 24px keyframe button + 8px margin */
         }
         
-        .particle-animator-container .timeline-numbers {
+        .timeline-numbers {
             position: absolute;
             top: 0;
             left: 0;
@@ -301,87 +306,342 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 5px;
-            color: #fff;
+            padding: 0 8px;
+            color: #999;
             font-size: 10px;
             pointer-events: none;
         }
         
-        .particle-animator-container .timeline-playhead {
+        .timeline-playhead {
             position: absolute;
             top: 0;
             bottom: 0;
             width: 2px;
-            background: #ff0000;
+            background: #ff4444;
             cursor: ew-resize;
             z-index: 10;
         }
         
-        .particle-animator-container .timeline-playhead::after {
+        .timeline-playhead::after {
             content: attr(data-frame);
             position: absolute;
             bottom: 100%;
             left: 50%;
             transform: translateX(-50%);
-            background: #ff0000;
+            background: #ff4444;
             color: white;
             padding: 2px 6px;
-            font-size: 11px;
+            font-size: 10px;
             border-radius: 3px;
             white-space: nowrap;
             margin-bottom: 2px;
         }
         
-        .particle-animator-container .keyframe-track {
-            height: 30px;
-            background: #f0f0f0;
-            border-radius: 3px;
-            position: relative;
-            cursor: pointer;
+        /* Parameter sections */
+        .parameter-section {
+            border-bottom: 1px solid #333;
         }
         
-        .particle-animator-container .keyframe {
+        .parameter-section:last-child {
+            border-bottom: none;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            padding: 8px 16px;
+            background: #252525;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .section-header:hover {
+            background: #2a2a2a;
+        }
+        
+        .section-arrow {
+            margin-right: 8px;
+            font-size: 10px;
+            transition: transform 0.2s;
+        }
+        
+        .parameter-section.collapsed .section-arrow {
+            transform: rotate(-90deg);
+        }
+        
+        .section-title {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .section-content {
+            display: block;
+        }
+        
+        .parameter-section.collapsed .section-content {
+            display: none;
+        }
+        
+        /* Parameter rows */
+        .parameter-row {
+            display: flex;
+            align-items: center;
+            height: 28px;
+            background: #1a1a1a;
+            border-bottom: 1px solid #282828;
+        }
+        
+        .parameter-row:hover {
+            background: #1f1f1f;
+        }
+        
+        .parameter-label {
+            width: 150px;
+            padding: 0 16px;
+            font-size: 11px;
+            color: #999;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .parameter-checkbox {
+            width: 14px;
+            height: 14px;
+            margin: 0;
+        }
+        
+        .parameter-value-control {
+            width: 80px;
+            padding: 0 8px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            border-right: 1px solid #333;
+        }
+        
+        .parameter-value-field {
+            background: #2a2a2a;
+            border: 1px solid #333;
+            color: #e0e0e0;
+            padding: 2px 6px;
+            font-size: 11px;
+            text-align: right;
+            cursor: ew-resize;
+            user-select: none;
+            width: 60px;
+            border-radius: 3px;
+            position: relative;
+        }
+        
+        .parameter-value-field:hover {
+            border-color: #444;
+            background: #333;
+        }
+        
+        .parameter-value-field.dragging {
+            background: #3a3a3a;
+            border-color: #4a90e2;
+        }
+        
+        .parameter-value-field.editing {
+            cursor: text;
+            user-select: text;
+            background: #3a3a3a;
+            border-color: #4a90e2;
+        }
+        
+        .parameter-value-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #3a3a3a;
+            border: 1px solid #4a90e2;
+            color: #e0e0e0;
+            padding: 2px 6px;
+            font-size: 11px;
+            text-align: right;
+            border-radius: 3px;
+            outline: none;
+        }
+        
+        .keyframe-button {
+            width: 24px;
+            height: 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            margin-right: 8px;
+        }
+        
+        .keyframe-button:hover {
+            color: #999;
+        }
+        
+        .keyframe-button.has-keyframe {
+            color: #4a90e2;
+        }
+        
+        .keyframe-button::before {
+            content: '◆';
+            font-size: 14px;
+        }
+        
+        .parameter-timeline {
+            position: relative;
+            flex: 1;
+            height: 100%;
+            background: #1a1a1a;
+            border-left: 1px solid #333;
+            overflow: hidden;
+        }
+        
+        .parameter-track {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none; /* Allow clicks to pass through to timeline */
+        }
+        
+        .parameter-track .keyframe {
+            pointer-events: all; /* But keyframes should be clickable */
+        }
+        
+        .keyframe {
             position: absolute;
             top: 50%;
-            transform: translate(-50%, -50%);
             width: 12px;
             height: 12px;
             background: #4a90e2;
-            border: 2px solid #fff;
-            border-radius: 2px;
+            transform: translate(-50%, -50%) rotate(45deg);
             cursor: move;
             transition: transform 0.1s;
-            z-index: 5;
+            z-index: 10;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.2);
         }
         
-        .particle-animator-container .keyframe:hover {
-            transform: translate(-50%, -50%) scale(1.2);
+        .keyframe:hover {
+            transform: translate(-50%, -50%) rotate(45deg) scale(1.2);
+            background: #5dade2;
         }
         
-        .particle-animator-container .keyframe.selected {
-            background: #ff6b6b;
+        .keyframe.selected {
+            background: #ff4444;
         }
         
-        /* Export Modal */
-        .particle-animator-container #exportModal {
+        /* Keyframe easing shapes */
+        .keyframe.ease {
+            border-radius: 50%;
+        }
+        
+        /* Modals */
+        .modal {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.8);
             z-index: 1000;
         }
         
-        .particle-animator-container #exportContent {
+        .modal-content {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: white;
+            background: #2a2a2a;
             padding: 20px;
             border-radius: 8px;
+            width: 400px;
+            border: 1px solid #444;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            color: #e0e0e0;
+            font-size: 16px;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: #999;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-close:hover {
+            color: #e0e0e0;
+        }
+        
+        .modal-body {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .input-group label {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .input-group input[type="number"],
+        .input-group input[type="color"] {
+            padding: 6px;
+            background: #333;
+            border: 1px solid #444;
+            color: #e0e0e0;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        
+        .input-group input[type="color"] {
+            height: 32px;
+            cursor: pointer;
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 20px;
+        }
+        
+        /* Export Modal */
+        #exportModal .modal-content {
             width: 80%;
             max-width: 600px;
             max-height: 80vh;
@@ -389,178 +649,631 @@
             flex-direction: column;
         }
         
-        .particle-animator-container #exportContent h3 {
-            margin-top: 0;
-            color: #333;
-        }
-        
-        .particle-animator-container #exportTextarea {
+        #exportTextarea {
             width: 100%;
             height: 400px;
             font-family: monospace;
             font-size: 12px;
-            border: 1px solid #ddd;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            border: 1px solid #444;
             padding: 10px;
             resize: vertical;
+            border-radius: 4px;
         }
         
-        .particle-animator-container #exportButtons {
-            margin-top: 10px;
+        /* Tooltips */
+        .tooltip {
+            position: absolute;
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 4px 8px;
+            font-size: 11px;
+            border-radius: 4px;
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .tooltip.visible {
+            opacity: 1;
+        }
+        
+        /* Global playhead line */
+        .timeline-container {
+            position: relative;
+        }
+        
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            top: -30px; /* Start from the timeline ruler */
+            bottom: 0;
+            width: 2px;
+            background: #ff4444;
+            pointer-events: none;
+            z-index: 15;
+            left: calc(262px + var(--playhead-position, 0px));
+            opacity: 0.5;
+        }
+
+        /* Context menu */
+        .context-menu {
+            position: fixed;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 4px;
+            padding: 4px 0;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
+        
+        .context-menu-item {
+            padding: 6px 16px;
+            font-size: 12px;
+            color: #e0e0e0;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        
+        .context-menu-item:hover {
+            background: #3a3a3a;
+        }
+        
+        .context-menu-item.active {
+            color: #4a90e2;
+        }
+        
+        /* Keyframe edit modal */
+        .keyframe-edit-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 6px;
+            padding: 16px;
+            z-index: 1001;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+        
+        .keyframe-edit-modal h4 {
+            margin: 0 0 12px 0;
+            font-size: 14px;
+            color: #e0e0e0;
+        }
+        
+        .keyframe-edit-row {
             display: flex;
-            gap: 10px;
-            justify-content: flex-end;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
         }
         
-        /* Responsive adjustments for smaller desktops */
-        @media (max-width: 1200px) {
-            .particle-animator-main {
-                flex-direction: column;
-            }
-            
-            .particle-animator-container #controls {
-                flex: 1;
-                max-width: 100%;
-                max-height: none;
-            }
+        .keyframe-edit-row label {
+            font-size: 12px;
+            color: #999;
+            width: 50px;
+        }
+        
+        .keyframe-edit-row input {
+            flex: 1;
+            padding: 4px 8px;
+            background: #333;
+            border: 1px solid #444;
+            color: #e0e0e0;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        
+        .keyframe-edit-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            margin-top: 12px;
+        }
+        
+        .keyframe-edit-buttons button {
+            padding: 4px 12px;
+            font-size: 12px;
         }
     </style>
 </head>
 <body>
-    <div class="particle-animator-container">
-        <div class="particle-animator-header">
-            <h1>Particle Grid Animator</h1>
-            <p class="attribution">by <a href="https://www.nathanshipley.com/" target="_blank">Nathan Shipley</a></p>
-            <div class="description">
+    <div class="app-container">
+        <!-- Collapsible Header -->
+        <div class="header collapsed" id="header">
+            <div class="header-bar" onclick="toggleHeader()">
+                <div class="header-title">
+                    <span class="header-arrow">▼</span>
+                    <span>Particle Grid Animator v02</span>
+                </div>
+                <span style="font-size: 12px; color: #999;">Click to expand info</span>
+            </div>
+            <div class="header-content">
+                <p>by <a href="https://www.nathanshipley.com/" target="_blank">Nathan Shipley</a></p>
                 <p>Create simple particle animations with wave motion, Perlin noise, and random effects.</p>
                 <p><strong>How to use:</strong> Adjust the grid size and particle settings in the controls panel. Enable different animation effects and use the sliders to control their intensity. Add keyframes to create evolving animations over time. Click the timeline to scrub through your animation.</p>
                 <p>The JSON exported data is formatted to work as Tracks with Kijai's <a href="https://github.com/kijai/ComfyUI-WanVideoWrapper/blob/main/example_workflows/wanvideo_ATI_testing_01.json" target="_blank">ATI implementation</a> for Wan in ComfyUI.</p>
             </div>
         </div>
         
-        <div class="particle-animator-main">
-            <div id="visualizerContainer">
-            <div id="canvasContainer">
-                <canvas id="canvas"></canvas>
-                <div id="info">Frame: <span id="frameCount">0</span> / <span id="totalFrames">120</span></div>
+        <!-- Main Workspace -->
+        <div class="workspace">
+            <!-- Left Panel - Preview -->
+            <div class="left-panel">
+                <div class="preview-container">
+                    <div class="preview-toolbar">
+                        <div class="preview-controls">
+                            <button class="playback-button" onclick="openCanvasSettings()">Canvas Settings</button>
+                            <button class="playback-button" onclick="openColorSettings()">Colors</button>
+                        </div>
+                        <div class="zoom-controls">
+                            <span>Zoom:</span>
+                            <select id="zoomLevel" onchange="updateZoom()">
+                                <option value="0.25">25%</option>
+                                <option value="0.5">50%</option>
+                                <option value="0.75">75%</option>
+                                <option value="1">100%</option>
+                                <option value="1.5">150%</option>
+                                <option value="2">200%</option>
+                                <option value="fit" selected>Fit to Window</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="preview-viewport" id="previewViewport">
+                        <div class="canvas-wrapper" id="canvasWrapper">
+                            <canvas id="canvas"></canvas>
+                            <div class="frame-info">Frame: <span id="frameCount">0</span> / <span id="totalFrames">120</span></div>
+                        </div>
+                    </div>
+                    <div class="playback-bar">
+                        <button class="playback-button" onclick="togglePlayback()">▶ Play</button>
+                        <button class="playback-button" onclick="resetAnimation()">⟲ Reset</button>
+                        <button class="playback-button" onclick="previousFrame()">◀ Prev</button>
+                        <button class="playback-button" onclick="nextFrame()">▶ Next</button>
+                        <div style="flex: 1;"></div>
+                        <button class="playback-button" onclick="exportJSON()">Export JSON</button>
+                        <button class="playback-button" onclick="exportFrames()">Export Frames</button>
+                    </div>
+                </div>
+                <div class="panel-divider" id="panelDivider"></div>
             </div>
-            <div id="playbackControls">
-                <button onclick="togglePlayback()">Play/Pause</button>
-                <button onclick="resetAnimation()">Reset</button>
-                <button onclick="exportJSON()">Export JSON</button>
-                <button onclick="exportFrames()">Export Frames</button>
-            </div>
-            <div id="timelineContainer">
+            
+            <!-- Right Panel - Timeline and Parameters -->
+            <div class="right-panel">
                 <div class="timeline-header">
-                    <h3>Timeline</h3>
-                    <button class="small" onclick="clearAllKeyframes()">Clear All</button>
+                    <span class="timeline-title">Timeline</span>
+                    <button class="playback-button" onclick="clearAllKeyframes()">Clear All Keys</button>
                 </div>
                 <div class="timeline-ruler" id="timelineRuler">
                     <div class="timeline-numbers"></div>
                     <div class="timeline-playhead" id="playhead" data-frame="0"></div>
                 </div>
-                <div id="timelineTracks"></div>
+                <div class="timeline-container">
+                    <!-- Particle Grid Section -->
+                    <div class="parameter-section" id="particleGridSection">
+                        <div class="section-header" onclick="toggleSection('particleGridSection')">
+                            <span class="section-arrow">▼</span>
+                            <span class="section-title">Particle Grid</span>
+                        </div>
+                        <div class="section-content">
+                            <div class="parameter-row">
+                                <div class="parameter-label">Grid Size X</div>
+                                <div class="parameter-value-control">
+                                    <input type="number" id="gridXDisplay" class="parameter-value-field" value="20" min="2" max="50" readonly style="cursor: default;">
+                                </div>
+                                <div class="parameter-timeline">
+                                    <input type="range" id="gridX" min="2" max="50" value="20" style="width: 100%;" oninput="updateGrid()">
+                                </div>
+                            </div>
+                            <div class="parameter-row">
+                                <div class="parameter-label">Grid Size Y</div>
+                                <div class="parameter-value-control">
+                                    <input type="number" id="gridYDisplay" class="parameter-value-field" value="20" min="2" max="50" readonly style="cursor: default;">
+                                </div>
+                                <div class="parameter-timeline">
+                                    <input type="range" id="gridY" min="2" max="50" value="20" style="width: 100%;" oninput="updateGrid()">
+                                </div>
+                            </div>
+                            <div class="parameter-row">
+                                <div class="parameter-label">Particle Size</div>
+                                <div class="parameter-value-control">
+                                    <div class="parameter-value-field" id="particleSizeValue" data-param="particleSize" data-min="1" data-max="20" data-step="0.5">3</div>
+                                </div>
+                                <button class="keyframe-button" id="particleSizeKey" onclick="toggleKeyframe('particleSize')"></button>
+                                <div class="parameter-timeline">
+                                    <div class="parameter-track" data-param="particleSize"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Wave Motion Section -->
+                    <div class="parameter-section" id="waveSection">
+                        <div class="section-header" onclick="toggleSection('waveSection')">
+                            <span class="section-arrow">▼</span>
+                            <span class="section-title">Wave Motion</span>
+                        </div>
+                        <div class="section-content">
+                            <div class="parameter-row">
+                                <div class="parameter-label">
+                                    <input type="checkbox" id="waveEnabled" class="parameter-checkbox" checked>
+                                    <span>Enable Wave</span>
+                                </div>
+                                <div class="parameter-value-control">
+                                    <input type="checkbox" id="waveLoop" style="margin-right: 8px;">
+                                    <label for="waveLoop" style="font-size: 11px; color: #999;">Loop</label>
+                                </div>
+                                <div class="parameter-timeline"></div>
+                            </div>
+                            <div class="parameter-row">
+                                <div class="parameter-label">Wave Amplitude</div>
+                                <div class="parameter-value-control">
+                                    <div class="parameter-value-field" id="waveAmpValue" data-param="waveAmp" data-min="0" data-max="200" data-step="1">50</div>
+                                </div>
+                                <button class="keyframe-button" id="waveAmpKey" onclick="toggleKeyframe('waveAmp')"></button>
+                                <div class="parameter-timeline">
+                                    <div class="parameter-track" data-param="waveAmp"></div>
+                                </div>
+                            </div>
+                            <div class="parameter-row">
+                                <div class="parameter-label">Wave Frequency</div>
+                                <div class="parameter-value-control">
+                                    <div class="parameter-value-field" id="waveFreqValue" data-param="waveFreq" data-min="0.1" data-max="10" data-step="0.1">2</div>
+                                </div>
+                                <button class="keyframe-button" id="waveFreqKey" onclick="toggleKeyframe('waveFreq')"></button>
+                                <div class="parameter-timeline">
+                                    <div class="parameter-track" data-param="waveFreq"></div>
+                                </div>
+                            </div>
+                            <div class="parameter-row">
+                                <div class="parameter-label">Wave Speed</div>
+                                <div class="parameter-value-control">
+                                    <div class="parameter-value-field" id="waveSpeedValue" data-param="waveSpeed" data-min="0" data-max="5" data-step="0.1">1</div>
+                                </div>
+                                <button class="keyframe-button" id="waveSpeedKey" onclick="toggleKeyframe('waveSpeed')"></button>
+                                <div class="parameter-timeline">
+                                    <div class="parameter-track" data-param="waveSpeed"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Perlin Noise Section -->
+                    <div class="parameter-section" id="noiseSection">
+                        <div class="section-header" onclick="toggleSection('noiseSection')">
+                            <span class="section-arrow">▼</span>
+                            <span class="section-title">Perlin Noise</span>
+                        </div>
+                        <div class="section-content">
+                            <div class="parameter-row">
+                                <div class="parameter-label">
+                                    <input type="checkbox" id="noiseEnabled" class="parameter-checkbox" checked>
+                                    <span>Enable Noise</span>
+                                </div>
+                                <div class="parameter-value-control">
+                                    <input type="checkbox" id="noiseLoop" style="margin-right: 8px;">
+                                    <label for="noiseLoop" style="font-size: 11px; color: #999;">Loop</label>
+                                </div>
+                                <div class="parameter-timeline"></div>
+                            </div>
+                            <div class="parameter-row">
+                                <div class="parameter-label">Noise Scale</div>
+                                <div class="parameter-value-control">
+                                    <div class="parameter-value-field" id="noiseScaleValue" data-param="noiseScale" data-min="0.0001" data-max="0.01" data-step="0.0001">0.001</div>
+                                </div>
+                                <button class="keyframe-button" id="noiseScaleKey" onclick="toggleKeyframe('noiseScale')"></button>
+                                <div class="parameter-timeline">
+                                    <div class="parameter-track" data-param="noiseScale"></div>
+                                </div>
+                            </div>
+                            <div class="parameter-row">
+                                <div class="parameter-label">Noise Strength</div>
+                                <div class="parameter-value-control">
+                                    <div class="parameter-value-field" id="noiseStrengthValue" data-param="noiseStrength" data-min="0" data-max="200" data-step="1">30</div>
+                                </div>
+                                <button class="keyframe-button" id="noiseStrengthKey" onclick="toggleKeyframe('noiseStrength')"></button>
+                                <div class="parameter-timeline">
+                                    <div class="parameter-track" data-param="noiseStrength"></div>
+                                </div>
+                            </div>
+                            <div class="parameter-row">
+                                <div class="parameter-label">Noise Speed</div>
+                                <div class="parameter-value-control">
+                                    <div class="parameter-value-field" id="noiseSpeedValue" data-param="noiseSpeed" data-min="0" data-max="2" data-step="0.1">0.5</div>
+                                </div>
+                                <button class="keyframe-button" id="noiseSpeedKey" onclick="toggleKeyframe('noiseSpeed')"></button>
+                                <div class="parameter-timeline">
+                                    <div class="parameter-track" data-param="noiseSpeed"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Random Motion Section -->
+                    <div class="parameter-section" id="randomSection">
+                        <div class="section-header" onclick="toggleSection('randomSection')">
+                            <span class="section-arrow">▼</span>
+                            <span class="section-title">Random Motion</span>
+                        </div>
+                        <div class="section-content">
+                            <div class="parameter-row">
+                                <div class="parameter-label">
+                                    <input type="checkbox" id="randomEnabled" class="parameter-checkbox">
+                                    <span>Enable Random</span>
+                                </div>
+                                <div class="parameter-value-control"></div>
+                                <div class="parameter-timeline"></div>
+                            </div>
+                            <div class="parameter-row">
+                                <div class="parameter-label">Random Strength</div>
+                                <div class="parameter-value-control">
+                                    <div class="parameter-value-field" id="randomStrengthValue" data-param="randomStrength" data-min="0" data-max="50" data-step="1">10</div>
+                                </div>
+                                <button class="keyframe-button" id="randomStrengthKey" onclick="toggleKeyframe('randomStrength')"></button>
+                                <div class="parameter-timeline">
+                                    <div class="parameter-track" data-param="randomStrength"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         
-        <div id="controls">
-            <div class="control-group">
-                <h2>Canvas Settings</h2>
-                <label>Width: <input type="number" id="canvasWidth" value="720" min="100" max="2000"></label>
-                <label>Height: <input type="number" id="canvasHeight" value="720" min="100" max="2000"></label>
-                <label>Duration (seconds): <input type="number" id="duration" value="5" min="0.1" max="30" step="0.1"></label>
-                <label>FPS: <input type="number" id="fps" value="24" min="1" max="60"></label>
-                <button onclick="updateCanvasSettings()">Apply Settings</button>
-            </div>
-            
-            <div class="control-group">
-                <h2>Particle Grid</h2>
-                <label>Grid Size X: <span class="value-display" id="gridXValue">20</span></label>
-                <input type="range" id="gridX" min="2" max="50" value="20" oninput="updateGrid()">
-                
-                <label>Grid Size Y: <span class="value-display" id="gridYValue">20</span></label>
-                <input type="range" id="gridY" min="2" max="50" value="20" oninput="updateGrid()">
-                
-                <label>Particle Size: <span class="value-display" id="particleSizeValue">3</span></label>
-                <input type="range" id="particleSize" min="1" max="20" value="3" step="0.5">
-            </div>
-            
-            <div class="control-group">
-                <h2>Colors</h2>
-                <label>Background Color:</label>
-                <input type="color" id="backgroundColor" value="#5a6a72">
-                
-                <label>Particle Color:</label>
-                <input type="color" id="particleColor" value="#ffe4bd">
-            </div>
-            
-            <div class="control-group">
-                <h2>Animation Effects</h2>
-                
-                <h3>Wave Motion</h3>
-                <div class="checkbox-group">
-                    <input type="checkbox" id="waveEnabled" checked>
-                    <label for="waveEnabled">Enable Wave</label>
+        <!-- Canvas Settings Modal -->
+        <div id="canvasSettingsModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Canvas Settings</h3>
+                    <button class="modal-close" onclick="closeModal('canvasSettingsModal')">&times;</button>
                 </div>
-                <div class="checkbox-group">
-                    <input type="checkbox" id="waveLoop">
-                    <label for="waveLoop">Loop Wave</label>
+                <div class="modal-body">
+                    <div class="input-group">
+                        <label for="canvasWidth">Canvas Width</label>
+                        <input type="number" id="canvasWidth" value="720" min="100" max="4096">
+                    </div>
+                    <div class="input-group">
+                        <label for="canvasHeight">Canvas Height</label>
+                        <input type="number" id="canvasHeight" value="720" min="100" max="4096">
+                    </div>
+                    <div class="input-group">
+                        <label for="duration">Duration (seconds)</label>
+                        <input type="number" id="duration" value="5" min="0.1" max="60" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label for="fps">FPS</label>
+                        <input type="number" id="fps" value="24" min="1" max="60">
+                    </div>
                 </div>
-                <label>Wave Amplitude: <span class="value-display" id="waveAmpValue">50</span></label>
-                <input type="range" id="waveAmp" min="0" max="200" value="50">
-                
-                <label>Wave Frequency: <span class="value-display" id="waveFreqValue">2</span></label>
-                <input type="range" id="waveFreq" min="0.1" max="10" value="2" step="0.1">
-                
-                <label>Wave Speed: <span class="value-display" id="waveSpeedValue">1</span></label>
-                <input type="range" id="waveSpeed" min="0" max="5" value="1" step="0.1">
-                
-                <h3>Perlin Noise</h3>
-                <div class="checkbox-group">
-                    <input type="checkbox" id="noiseEnabled" checked>
-                    <label for="noiseEnabled">Enable Noise</label>
+                <div class="modal-footer">
+                    <button class="playback-button" onclick="applyCanvasSettings()">Apply</button>
+                    <button class="playback-button" onclick="closeModal('canvasSettingsModal')">Cancel</button>
                 </div>
-                <div class="checkbox-group">
-                    <input type="checkbox" id="noiseLoop">
-                    <label for="noiseLoop">Loop Noise</label>
-                </div>
-                <label>Noise Scale: <span class="value-display" id="noiseScaleValue">0.01</span></label>
-                <input type="range" id="noiseScale" min="0.001" max="0.1" value="0.01" step="0.001">
-                
-                <label>Noise Strength: <span class="value-display" id="noiseStrengthValue">30</span></label>
-                <input type="range" id="noiseStrength" min="0" max="100" value="30">
-                
-                <label>Noise Speed: <span class="value-display" id="noiseSpeedValue">0.5</span></label>
-                <input type="range" id="noiseSpeed" min="0" max="2" value="0.5" step="0.1">
-                
-                <h3>Random Motion</h3>
-                <div class="checkbox-group">
-                    <input type="checkbox" id="randomEnabled">
-                    <label for="randomEnabled">Enable Random</label>
-                </div>
-                <label>Random Strength: <span class="value-display" id="randomStrengthValue">10</span></label>
-                <input type="range" id="randomStrength" min="0" max="50" value="10">
             </div>
         </div>
         
-        <div id="exportModal">
-            <div id="exportContent">
-                <h3>Export Animation Data</h3>
-                <textarea id="exportTextarea" readonly></textarea>
-                <div id="exportButtons">
-                    <button onclick="copyToClipboard()">Copy to Clipboard</button>
-                    <button onclick="downloadJSON()">Download as File</button>
-                    <button onclick="closeExportModal()">Close</button>
+        <!-- Color Settings Modal -->
+        <div id="colorSettingsModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Color Settings</h3>
+                    <button class="modal-close" onclick="closeModal('colorSettingsModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group">
+                        <label for="backgroundColor">Background Color</label>
+                        <input type="color" id="backgroundColor" value="#5a6a72">
+                    </div>
+                    <div class="input-group">
+                        <label for="particleColor">Particle Color</label>
+                        <input type="color" id="particleColor" value="#ffe4bd">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="playback-button" onclick="applyColorSettings()">Apply</button>
+                    <button class="playback-button" onclick="closeModal('colorSettingsModal')">Cancel</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Export Modal -->
+        <div id="exportModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Export Animation Data</h3>
+                    <button class="modal-close" onclick="closeModal('exportModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <textarea id="exportTextarea" readonly></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button class="playback-button" onclick="copyToClipboard()">Copy to Clipboard</button>
+                    <button class="playback-button" onclick="downloadJSON()">Download as File</button>
+                    <button class="playback-button" onclick="closeModal('exportModal')">Close</button>
                 </div>
             </div>
         </div>
     </div>
     
+    <!-- Context Menu -->
+    <div class="context-menu" id="keyframeContextMenu">
+        <div class="context-menu-item" data-easing="linear">Linear</div>
+        <div class="context-menu-item" data-easing="ease">Ease</div>
+    </div>
+    
+    <!-- Keyframe Edit Modal -->
+    <div class="keyframe-edit-modal" id="keyframeEditModal">
+        <h4>Edit Keyframe</h4>
+        <div class="keyframe-edit-row">
+            <label>Time:</label>
+            <input type="number" id="keyframeEditTime" min="0" step="0.1">
+        </div>
+        <div class="keyframe-edit-row">
+            <label>Value:</label>
+            <input type="number" id="keyframeEditValue" step="0.1">
+        </div>
+        <div class="keyframe-edit-buttons">
+            <button class="playback-button" onclick="applyKeyframeEdit()">Apply</button>
+            <button class="playback-button" onclick="closeKeyframeEdit()">Cancel</button>
+        </div>
+    </div>
+    
+    <!-- Tooltip -->
+    <div class="tooltip" id="tooltip"></div>
+    
+    <!-- Hidden inputs for parameters -->
+    <input type="range" id="particleSize" min="1" max="20" value="3" step="0.5" style="display: none;">
+    <input type="range" id="waveAmp" min="0" max="200" value="50" style="display: none;">
+    <input type="range" id="waveFreq" min="0.1" max="10" value="2" step="0.1" style="display: none;">
+    <input type="range" id="waveSpeed" min="0" max="5" value="1" step="0.1" style="display: none;">
+    <input type="range" id="noiseScale" min="0.0001" max="0.01" value="0.001" step="0.0001" style="display: none;">
+    <input type="range" id="noiseStrength" min="0" max="200" value="30" style="display: none;">
+    <input type="range" id="noiseSpeed" min="0" max="2" value="0.5" step="0.1" style="display: none;">
+    <input type="range" id="randomStrength" min="0" max="50" value="10" style="display: none;">
+    
     <!-- Load JSZip from CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     
     <script>
-        // Wrap in IIFE to avoid global scope conflicts in Squarespace
+        // Wrap in IIFE to avoid global scope conflicts
         (function() {
+            // UI Functions
+            window.toggleHeader = function() {
+                const header = document.getElementById('header');
+                header.classList.toggle('collapsed');
+                header.classList.toggle('expanded');
+            }
+            
+            window.toggleSection = function(sectionId) {
+                const section = document.getElementById(sectionId);
+                section.classList.toggle('collapsed');
+            }
+            
+            window.openCanvasSettings = function() {
+                document.getElementById('canvasSettingsModal').style.display = 'block';
+            }
+            
+            window.openColorSettings = function() {
+                document.getElementById('colorSettingsModal').style.display = 'block';
+            }
+            
+            window.closeModal = function(modalId) {
+                document.getElementById(modalId).style.display = 'none';
+            }
+            
+            window.applyCanvasSettings = function() {
+                updateCanvasSettings();
+                closeModal('canvasSettingsModal');
+            }
+            
+            window.applyColorSettings = function() {
+                render();
+                closeModal('colorSettingsModal');
+            }
+            
+            window.updateZoom = function() {
+                const zoomSelect = document.getElementById('zoomLevel');
+                const canvasWrapper = document.getElementById('canvasWrapper');
+                const viewport = document.getElementById('previewViewport');
+                const canvas = document.getElementById('canvas');
+                
+                if (zoomSelect.value === 'fit') {
+                    // Calculate scale to fit
+                    const viewportRect = viewport.getBoundingClientRect();
+                    const padding = 40;
+                    const scaleX = (viewportRect.width - padding) / canvas.width;
+                    const scaleY = (viewportRect.height - padding) / canvas.height;
+                    const scale = Math.min(scaleX, scaleY);
+                    canvasWrapper.style.transform = `scale(${scale})`;
+                } else {
+                    const scale = parseFloat(zoomSelect.value);
+                    canvasWrapper.style.transform = `scale(${scale})`;
+                }
+            }
+            
+            // Add resize observer for continuous fit-to-window updates
+            let resizeObserver;
+            function initializeResizeObserver() {
+                const viewport = document.getElementById('previewViewport');
+                resizeObserver = new ResizeObserver(() => {
+                    const zoomSelect = document.getElementById('zoomLevel');
+                    if (zoomSelect.value === 'fit') {
+                        updateZoom();
+                    }
+                });
+                resizeObserver.observe(viewport);
+            }
+            
+            // Panel divider functionality
+            let isDraggingDivider = false;
+            
+            function initializePanelDivider() {
+                const divider = document.getElementById('panelDivider');
+                const leftPanel = document.querySelector('.left-panel');
+                const rightPanel = document.querySelector('.right-panel');
+                
+                divider.addEventListener('mousedown', (e) => {
+                    isDraggingDivider = true;
+                    divider.classList.add('dragging');
+                    document.body.style.cursor = 'col-resize';
+                    document.body.style.userSelect = 'none';
+                    e.preventDefault();
+                });
+                
+                document.addEventListener('mousemove', (e) => {
+                    if (!isDraggingDivider) return;
+                    
+                    const workspace = document.querySelector('.workspace');
+                    const workspaceRect = workspace.getBoundingClientRect();
+                    const newLeftWidth = e.clientX - workspaceRect.left;
+                    const workspaceWidth = workspaceRect.width;
+                    
+                    // Set minimum and maximum widths
+                    const minWidth = 300;
+                    const maxWidth = workspaceWidth - 500; // Increased minimum for right panel
+                    
+                    if (newLeftWidth >= minWidth && newLeftWidth <= maxWidth) {
+                        const leftPercent = (newLeftWidth / workspaceWidth) * 100;
+                        leftPanel.style.flex = `0 0 ${leftPercent}%`;
+                        
+                        // Update zoom if fit to window is selected
+                        const zoomSelect = document.getElementById('zoomLevel');
+                        if (zoomSelect.value === 'fit') {
+                            updateZoom();
+                        }
+                    }
+                });
+                
+                document.addEventListener('mouseup', () => {
+                    if (isDraggingDivider) {
+                        isDraggingDivider = false;
+                        divider.classList.remove('dragging');
+                        document.body.style.cursor = '';
+                        document.body.style.userSelect = '';
+                    }
+                });
+            }
+            
+            window.previousFrame = function() {
+                if (currentFrame > 0) {
+                    currentFrame--;
+                    render();
+                }
+            }
+            
+            window.nextFrame = function() {
+                if (currentFrame < totalFrames - 1) {
+                    currentFrame++;
+                    render();
+                }
+            }
+            
             // Perlin noise implementation
             class PerlinNoise {
                 constructor() {
@@ -622,10 +1335,10 @@
                     this.keyframes = [];
                 }
                 
-                addKeyframe(time, value) {
+                addKeyframe(time, value, easing = 'linear') {
                     // Remove any existing keyframe at this time
                     this.keyframes = this.keyframes.filter(kf => Math.abs(kf.time - time) > 0.01);
-                    this.keyframes.push({ time, value });
+                    this.keyframes.push({ time, value, easing });
                     this.keyframes.sort((a, b) => a.time - b.time);
                 }
                 
@@ -651,8 +1364,27 @@
                         if (time >= this.keyframes[i].time && time <= this.keyframes[i + 1].time) {
                             const k1 = this.keyframes[i];
                             const k2 = this.keyframes[i + 1];
-                            const t = (time - k1.time) / (k2.time - k1.time);
-                            return k1.value + (k2.value - k1.value) * t; // Linear interpolation
+                            let t = (time - k1.time) / (k2.time - k1.time);
+                            
+                            // Check if either keyframe has easing
+                            const k1HasEase = k1.easing === 'ease';
+                            const k2HasEase = k2.easing === 'ease';
+                            
+                            if (k1HasEase && k2HasEase) {
+                                // Both keyframes have ease - full ease-in-out curve
+                                t = t < 0.5 
+                                    ? 4 * t * t * t 
+                                    : 1 - Math.pow(-2 * t + 2, 3) / 2;
+                            } else if (k1HasEase && !k2HasEase) {
+                                // Only first keyframe has ease - ease out of k1
+                                t = t * t * t;  // Start slow (ease out of k1)
+                            } else if (!k1HasEase && k2HasEase) {
+                                // Only second keyframe has ease - ease into k2
+                                t = 1 - Math.pow(1 - t, 3);  // End slow (ease into k2)
+                            }
+                            // else both are linear, t remains unchanged
+                            
+                            return k1.value + (k2.value - k1.value) * t;
                         }
                     }
                     
@@ -677,16 +1409,17 @@
             let lastTime = 0;
             let frameTime = 1000 / 24; // milliseconds per frame at 24 FPS
             
-            // Keyframe tracks
-            const keyframeTracks = [
-                new KeyframeTrack('Wave Amplitude', 'waveAmp', 0, 200),
-                new KeyframeTrack('Wave Frequency', 'waveFreq', 0.1, 10),
-                new KeyframeTrack('Wave Speed', 'waveSpeed', 0, 5),
-                new KeyframeTrack('Noise Strength', 'noiseStrength', 0, 100),
-                new KeyframeTrack('Noise Scale', 'noiseScale', 0.001, 0.1),
-                new KeyframeTrack('Noise Speed', 'noiseSpeed', 0, 2),
-                new KeyframeTrack('Random Strength', 'randomStrength', 0, 50)
-            ];
+            // Keyframe tracks map
+            const keyframeTracks = {
+                particleSize: new KeyframeTrack('Particle Size', 'particleSize', 1, 20),
+                waveAmp: new KeyframeTrack('Wave Amplitude', 'waveAmp', 0, 200),
+                waveFreq: new KeyframeTrack('Wave Frequency', 'waveFreq', 0.1, 10),
+                waveSpeed: new KeyframeTrack('Wave Speed', 'waveSpeed', 0, 5),
+                noiseStrength: new KeyframeTrack('Noise Strength', 'noiseStrength', 0, 200),
+                noiseScale: new KeyframeTrack('Noise Scale', 'noiseScale', 0.0001, 0.01),
+                noiseSpeed: new KeyframeTrack('Noise Speed', 'noiseSpeed', 0, 2),
+                randomStrength: new KeyframeTrack('Random Strength', 'randomStrength', 0, 50)
+            };
             
             class Particle {
                 constructor(x, y, index) {
@@ -708,13 +1441,13 @@
                     this.y = this.baseY;
                     
                     // Get animated values from keyframe tracks
-                    const waveAmp = keyframeTracks[0].getValueAtTime(time);
-                    const waveFreq = keyframeTracks[1].getValueAtTime(time);
-                    const waveSpeed = keyframeTracks[2].getValueAtTime(time);
-                    const noiseStrength = keyframeTracks[3].getValueAtTime(time);
-                    const noiseScale = keyframeTracks[4].getValueAtTime(time);
-                    const noiseSpeed = keyframeTracks[5].getValueAtTime(time);
-                    const randomStrength = keyframeTracks[6].getValueAtTime(time);
+                    const waveAmp = keyframeTracks.waveAmp.getValueAtTime(time);
+                    const waveFreq = keyframeTracks.waveFreq.getValueAtTime(time);
+                    const waveSpeed = keyframeTracks.waveSpeed.getValueAtTime(time);
+                    const noiseStrength = keyframeTracks.noiseStrength.getValueAtTime(time);
+                    const noiseScale = keyframeTracks.noiseScale.getValueAtTime(time);
+                    const noiseSpeed = keyframeTracks.noiseSpeed.getValueAtTime(time);
+                    const randomStrength = keyframeTracks.randomStrength.getValueAtTime(time);
                     
                     // Wave motion
                     if (document.getElementById('waveEnabled').checked) {
@@ -796,7 +1529,7 @@
                 }
                 
                 draw() {
-                    const size = parseFloat(document.getElementById('particleSize').value);
+                    const size = keyframeTracks.particleSize.getValueAtTime(currentFrame / totalFrames * duration);
                     const color = document.getElementById('particleColor').value;
                     ctx.fillStyle = color;
                     ctx.beginPath();
@@ -821,14 +1554,15 @@
                 updateGrid();
                 resetAnimation();
                 updateTimeline();
+                updateAllKeyframes();
             }
             
             window.updateGrid = function() {
                 const gridX = parseInt(document.getElementById('gridX').value);
                 const gridY = parseInt(document.getElementById('gridY').value);
                 
-                document.getElementById('gridXValue').textContent = gridX;
-                document.getElementById('gridYValue').textContent = gridY;
+                document.getElementById('gridXDisplay').value = gridX;
+                document.getElementById('gridYDisplay').value = gridY;
                 
                 particles = [];
                 const spacingX = canvasWidth / (gridX + 1);
@@ -858,6 +1592,30 @@
                 
                 document.getElementById('frameCount').textContent = currentFrame;
                 updatePlayhead();
+                updateParameterValues();
+                updateKeyframeButtons();
+            }
+            
+            function updateParameterValues() {
+                const time = currentFrame / totalFrames * duration;
+                
+                // Update all parameter value displays
+                for (const [paramId, track] of Object.entries(keyframeTracks)) {
+                    const value = track.getValueAtTime(time);
+                    const valueDisplay = document.getElementById(paramId + 'Value');
+                    if (valueDisplay) {
+                        if (paramId === 'noiseScale') {
+                            valueDisplay.textContent = value.toFixed(4);
+                        } else if (paramId === 'waveFreq' || paramId === 'waveSpeed' || paramId === 'noiseSpeed' || paramId === 'particleSize') {
+                            valueDisplay.textContent = value.toFixed(1);
+                        } else {
+                            valueDisplay.textContent = Math.round(value);
+                        }
+                        
+                        // Also update the hidden input for the current value
+                        document.getElementById(paramId).value = value;
+                    }
+                }
             }
             
             function animate(timestamp) {
@@ -879,6 +1637,9 @@
             
             window.togglePlayback = function() {
                 isPlaying = !isPlaying;
+                const playButton = document.querySelector('.playback-bar .playback-button');
+                playButton.textContent = isPlaying ? '⏸ Pause' : '▶ Play';
+                
                 if (isPlaying) {
                     lastTime = 0;
                     animate(0);
@@ -898,6 +1659,8 @@
                     cancelAnimationFrame(animationId);
                     animationId = null;
                 }
+                const playButton = document.querySelector('.playback-bar .playback-button');
+                playButton.textContent = '▶ Play';
                 render();
             }
             
@@ -960,103 +1723,6 @@
                 URL.revokeObjectURL(url);
             }
 
-            window.exportFrames = async function() {
-    // Check if JSZip is loaded
-    if (typeof JSZip === 'undefined') {
-        alert('Please wait for the page to fully load and try again.');
-        return;
-    }
-    
-    // Create progress indicator
-    const progressDiv = document.createElement('div');
-    progressDiv.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); color: white; padding: 20px; border-radius: 8px; z-index: 10000;';
-    progressDiv.innerHTML = '<h3>Exporting Frames...</h3><p id="exportProgress">Preparing...</p>';
-    document.body.appendChild(progressDiv);
-    
-    try {
-        const zip = new JSZip();
-        const folder = zip.folder('particle_animation_frames');
-        
-        // Store current frame to restore later
-        const originalFrame = currentFrame;
-        
-        // Export each frame
-        for (let frame = 0; frame < totalFrames; frame++) {
-            currentFrame = frame;
-            render();
-            
-            // Update progress
-            document.getElementById('exportProgress').textContent = `Processing frame ${frame + 1} of ${totalFrames}`;
-            
-            // Convert canvas to blob
-            const blob = await new Promise(resolve => {
-                canvas.toBlob(resolve, 'image/png');
-            });
-            
-            // Add to zip with padded frame number
-            const frameNumber = String(frame).padStart(4, '0');
-            folder.file(`frame_${frameNumber}.png`, blob);
-            
-            // Allow UI to update
-            await new Promise(resolve => setTimeout(resolve, 0));
-        }
-        
-        // Add a text file with animation info
-        const info = `Particle Animation Export
-========================
-Total Frames: ${totalFrames}
-FPS: ${fps}
-Duration: ${duration} seconds
-Canvas Size: ${canvasWidth}x${canvasHeight}
-Grid Size: ${document.getElementById('gridX').value}x${document.getElementById('gridY').value}
-
-Effects:
-- Wave: ${document.getElementById('waveEnabled').checked ? 'Enabled' : 'Disabled'}
-- Perlin Noise: ${document.getElementById('noiseEnabled').checked ? 'Enabled' : 'Disabled'}
-- Random: ${document.getElementById('randomEnabled').checked ? 'Enabled' : 'Disabled'}
-
-Created with Particle Grid Animator 
-https://nathanshipley.github.io/particleGridAnimator/
-
-by Nathan Shipley
-https://www.nathanshipley.com/`;
-        
-        folder.file('animation_info.txt', info);
-        
-        // Generate zip file
-        document.getElementById('exportProgress').textContent = 'Creating ZIP file...';
-        const zipBlob = await zip.generateAsync({
-            type: 'blob',
-            compression: 'DEFLATE',
-            compressionOptions: { level: 6 }
-        });
-        
-        // Download the zip
-        const url = URL.createObjectURL(zipBlob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'particle_animation_frames.zip';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        
-        // Restore original frame
-        currentFrame = originalFrame;
-        render();
-        
-        // Remove progress indicator
-        document.body.removeChild(progressDiv);
-        
-    } catch (error) {
-        console.error('Error exporting frames:', error);
-        alert('Error exporting frames. Please try again.');
-        document.body.removeChild(progressDiv);
-        currentFrame = originalFrame;
-        render();
-    }
-}
-            
             window.exportFrames = async function() {
                 // Check if JSZip is loaded
                 if (typeof JSZip === 'undefined') {
@@ -1166,64 +1832,6 @@ https://www.nathanshipley.com/`;
                     marker.textContent = time;
                     ruler.appendChild(marker);
                 }
-                
-                renderTimelineTracks();
-            }
-            
-            function renderTimelineTracks() {
-                const container = document.getElementById('timelineTracks');
-                container.innerHTML = '';
-                
-                keyframeTracks.forEach((track, trackIndex) => {
-                    const trackDiv = document.createElement('div');
-                    trackDiv.className = 'timeline-track';
-                    
-                    const header = document.createElement('div');
-                    header.className = 'track-header';
-                    
-                    const name = document.createElement('div');
-                    name.className = 'track-name';
-                    name.textContent = track.name;
-                    
-                    const controls = document.createElement('div');
-                    controls.className = 'track-controls';
-                    
-                    const addBtn = document.createElement('button');
-                    addBtn.className = 'small';
-                    addBtn.textContent = 'Add Key';
-                    addBtn.onclick = () => addKeyframeAtCurrentTime(trackIndex);
-                    
-                    controls.appendChild(addBtn);
-                    header.appendChild(name);
-                    header.appendChild(controls);
-                    
-                    const keyframeTrack = document.createElement('div');
-                    keyframeTrack.className = 'keyframe-track';
-                    keyframeTrack.dataset.trackIndex = trackIndex;
-                    
-                    // Add keyframes
-                    track.keyframes.forEach((kf, kfIndex) => {
-                        const keyframe = document.createElement('div');
-                        keyframe.className = 'keyframe';
-                        keyframe.style.left = (kf.time / duration * 100) + '%';
-                        keyframe.dataset.keyframeIndex = kfIndex;
-                        keyframe.title = `Time: ${kf.time.toFixed(2)}s, Value: ${kf.value.toFixed(2)}`;
-                        
-                        keyframe.onmousedown = (e) => startDragKeyframe(e, trackIndex, kfIndex);
-                        keyframe.oncontextmenu = (e) => {
-                            e.preventDefault();
-                            track.removeKeyframe(kfIndex);
-                            renderTimelineTracks();
-                            render();
-                        };
-                        
-                        keyframeTrack.appendChild(keyframe);
-                    });
-                    
-                    trackDiv.appendChild(header);
-                    trackDiv.appendChild(keyframeTrack);
-                    container.appendChild(trackDiv);
-                });
             }
             
             function updatePlayhead() {
@@ -1231,6 +1839,13 @@ https://www.nathanshipley.com/`;
                 const progress = currentFrame / totalFrames;
                 playhead.style.left = (progress * 100) + '%';
                 playhead.setAttribute('data-frame', `Frame ${currentFrame}`);
+                
+                // Update CSS variable for global playhead line
+                const container = document.querySelector('.timeline-container');
+                if (container) {
+                    const timelineWidth = container.offsetWidth - 262; // subtract left margin
+                    container.style.setProperty('--playhead-position', (progress * timelineWidth) + 'px');
+                }
             }
             
             let isDraggingPlayhead = false;
@@ -1245,29 +1860,59 @@ https://www.nathanshipley.com/`;
                     seekToPosition(e);
                 });
                 
-                // Drag playhead
+                // Drag playhead - both the line and the label
                 playhead.addEventListener('mousedown', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
-                    isDraggingPlayhead = true;
-                    document.addEventListener('mousemove', dragPlayhead);
-                    document.addEventListener('mouseup', stopDragPlayhead);
+                    startDragPlayhead(e);
+                });
+                
+                // Make the entire playhead line draggable
+                document.addEventListener('mousedown', function(e) {
+                    // Check if we clicked on the playhead line in any timeline track
+                    const rect = ruler.getBoundingClientRect();
+                    const progress = currentFrame / totalFrames;
+                    const playheadX = rect.left + (progress * rect.width);
+                    
+                    // If click is near the playhead position and within a timeline area
+                    if (Math.abs(e.clientX - playheadX) < 5) {
+                        const clickedElement = document.elementFromPoint(e.clientX, e.clientY);
+                        if (clickedElement && (
+                            clickedElement.classList.contains('parameter-timeline') ||
+                            clickedElement.classList.contains('parameter-track') ||
+                            clickedElement.classList.contains('timeline-ruler')
+                        )) {
+                            e.preventDefault();
+                            startDragPlayhead(e);
+                        }
+                    }
                 });
             }
             
-            function dragPlayhead(e) {
-                const ruler = document.getElementById('timelineRuler');
-                const rect = ruler.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const progress = Math.max(0, Math.min(1, x / rect.width));
-                currentFrame = Math.floor(progress * totalFrames);
-                render();
-            }
-            
-            function stopDragPlayhead() {
-                isDraggingPlayhead = false;
-                document.removeEventListener('mousemove', dragPlayhead);
-                document.removeEventListener('mouseup', stopDragPlayhead);
+            function startDragPlayhead(e) {
+                isDraggingPlayhead = true;
+                document.body.style.cursor = 'ew-resize';
+                document.body.style.userSelect = 'none';
+                
+                const handleDrag = (e) => {
+                    const ruler = document.getElementById('timelineRuler');
+                    const rect = ruler.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const progress = Math.max(0, Math.min(1, x / rect.width));
+                    currentFrame = Math.floor(progress * totalFrames);
+                    render();
+                };
+                
+                const handleRelease = () => {
+                    isDraggingPlayhead = false;
+                    document.body.style.cursor = '';
+                    document.body.style.userSelect = '';
+                    document.removeEventListener('mousemove', handleDrag);
+                    document.removeEventListener('mouseup', handleRelease);
+                };
+                
+                document.addEventListener('mousemove', handleDrag);
+                document.addEventListener('mouseup', handleRelease);
             }
             
             function seekToPosition(event) {
@@ -1278,83 +1923,601 @@ https://www.nathanshipley.com/`;
                 render();
             }
             
-            window.addKeyframeAtCurrentTime = function(trackIndex) {
-                const track = keyframeTracks[trackIndex];
-                const currentTime = (currentFrame / totalFrames) * duration;
-                const currentValue = parseFloat(document.getElementById(track.paramId).value);
+            // Keyframe management
+            window.toggleKeyframe = function(paramId) {
+                const track = keyframeTracks[paramId];
+                const currentTime = currentFrame / totalFrames * duration;
+                const button = document.getElementById(paramId + 'Key');
                 
-                track.addKeyframe(currentTime, currentValue);
-                renderTimelineTracks();
+                // Check if there's already a keyframe at this time
+                const existingKeyframe = track.keyframes.find(kf => Math.abs(kf.time - currentTime) < 0.01);
+                
+                if (existingKeyframe) {
+                    // Remove keyframe
+                    track.keyframes = track.keyframes.filter(kf => kf !== existingKeyframe);
+                } else {
+                    // Add keyframe with current value
+                    const value = parseFloat(document.getElementById(paramId).value);
+                    track.addKeyframe(currentTime, value, 'linear');
+                }
+                
+                updateKeyframeDisplay(paramId);
+                updateKeyframeButtons();
                 render();
             }
             
-            let draggedKeyframe = null;
-            let dragTrackIndex = null;
+            function updateKeyframeButtons() {
+                const currentTime = currentFrame / totalFrames * duration;
+                
+                for (const [paramId, track] of Object.entries(keyframeTracks)) {
+                    const button = document.getElementById(paramId + 'Key');
+                    if (button) {
+                        const hasKeyframe = track.keyframes.some(kf => Math.abs(kf.time - currentTime) < 0.01);
+                        button.classList.toggle('has-keyframe', hasKeyframe);
+                    }
+                }
+            }
             
-            function startDragKeyframe(e, trackIndex, keyframeIndex) {
+            function updateKeyframeDisplay(paramId) {
+                const track = keyframeTracks[paramId];
+                const container = document.querySelector(`.parameter-track[data-param="${paramId}"]`);
+                
+                if (!container) {
+                    console.error('No container found for', paramId);
+                    return;
+                }
+                
+                // Remove existing keyframes
+                container.querySelectorAll('.keyframe').forEach(k => k.remove());
+                
+                // Add keyframe elements
+                track.keyframes.forEach((keyframe, index) => {
+                    const kfElement = document.createElement('div');
+                    kfElement.className = 'keyframe';
+                    if (keyframe.easing === 'ease') {
+                        kfElement.classList.add('ease');
+                    }
+                    kfElement.style.left = (keyframe.time / duration * 100) + '%';
+                    kfElement.dataset.paramId = paramId;
+                    kfElement.dataset.index = index;
+                    
+                    // Add tooltip on hover
+                    kfElement.addEventListener('mouseenter', (e) => showKeyframeTooltip(e, keyframe, paramId));
+                    kfElement.addEventListener('mouseleave', hideTooltip);
+                    
+                    // Make keyframe draggable
+                    kfElement.addEventListener('mousedown', startDragKeyframe);
+                    
+                    // Double click to edit
+                    kfElement.addEventListener('dblclick', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        openKeyframeEdit(paramId, index);
+                    });
+                    
+                    // Right click for easing menu
+                    kfElement.addEventListener('contextmenu', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        showEasingMenu(e, paramId, index);
+                    });
+                    
+                    container.appendChild(kfElement);
+                });
+            }
+            
+            function updateAllKeyframes() {
+                for (const paramId in keyframeTracks) {
+                    updateKeyframeDisplay(paramId);
+                }
+                updateKeyframeButtons();
+            }
+            
+            let draggedKeyframe = null;
+            let draggedKeyframeData = null;
+            let dragOffset = 0;
+            
+            function startDragKeyframe(e) {
                 e.preventDefault();
-                draggedKeyframe = keyframeIndex;
-                dragTrackIndex = trackIndex;
+                e.stopPropagation();
+                
+                draggedKeyframe = e.target;
+                const container = draggedKeyframe.parentElement;
+                const rect = container.getBoundingClientRect();
+                const kfRect = draggedKeyframe.getBoundingClientRect();
+                dragOffset = e.clientX - kfRect.left - (kfRect.width / 2);
+                
+                // Store keyframe data
+                const paramId = draggedKeyframe.dataset.paramId;
+                const index = parseInt(draggedKeyframe.dataset.index);
+                const track = keyframeTracks[paramId];
+                draggedKeyframeData = {
+                    paramId: paramId,
+                    keyframe: track.keyframes[index]
+                };
+                
+                draggedKeyframe.classList.add('selected');
+                document.body.style.cursor = 'ew-resize';
                 
                 document.addEventListener('mousemove', dragKeyframe);
                 document.addEventListener('mouseup', stopDragKeyframe);
             }
             
             function dragKeyframe(e) {
-                if (draggedKeyframe === null) return;
+                if (!draggedKeyframe || !draggedKeyframeData) return;
                 
-                const track = keyframeTracks[dragTrackIndex];
-                const trackElement = document.querySelector(`[data-track-index="${dragTrackIndex}"]`);
-                const rect = trackElement.getBoundingClientRect();
+                const container = document.querySelector(`.parameter-track[data-param="${draggedKeyframeData.paramId}"]`);
+                if (!container) return;
                 
-                const x = e.clientX - rect.left;
+                const rect = container.getBoundingClientRect();
+                const x = e.clientX - rect.left - dragOffset;
                 const progress = Math.max(0, Math.min(1, x / rect.width));
-                const newTime = progress * duration;
+                const time = progress * duration;
                 
-                const kf = track.keyframes[draggedKeyframe];
-                kf.time = newTime;
+                // Update the keyframe time directly
+                draggedKeyframeData.keyframe.time = time;
                 
+                // Re-sort and update display
+                const track = keyframeTracks[draggedKeyframeData.paramId];
                 track.keyframes.sort((a, b) => a.time - b.time);
-                renderTimelineTracks();
+                
+                updateKeyframeDisplay(draggedKeyframeData.paramId);
+                updateKeyframeButtons();
                 render();
             }
             
             function stopDragKeyframe() {
-                draggedKeyframe = null;
-                dragTrackIndex = null;
-                document.removeEventListener('mousemove', dragKeyframe);
-                document.removeEventListener('mouseup', stopDragKeyframe);
+                if (draggedKeyframe) {
+                    draggedKeyframe.classList.remove('selected');
+                    draggedKeyframe = null;
+                    draggedKeyframeData = null;
+                    document.body.style.cursor = '';
+                    document.removeEventListener('mousemove', dragKeyframe);
+                    document.removeEventListener('mouseup', stopDragKeyframe);
+                }
             }
             
-            window.clearAllKeyframes = function() {
-                keyframeTracks.forEach(track => track.keyframes = []);
-                renderTimelineTracks();
+            // Value dragging and editing system
+            let draggedValue = null;
+            let dragStartX = 0;
+            let dragStartValue = 0;
+            let isDraggingValue = false;
+            let clickTimeout = null;
+            
+            function initializeValueDragging() {
+                document.querySelectorAll('.parameter-value-field[data-param]').forEach(field => {
+                    field.addEventListener('mousedown', handleValueMouseDown);
+                    field.addEventListener('click', handleValueClick);
+                });
+            }
+            
+            function handleValueMouseDown(e) {
+                e.preventDefault();
+                const field = e.target;
+                
+                // Set up potential drag
+                draggedValue = field;
+                dragStartX = e.clientX;
+                const paramId = field.dataset.param;
+                dragStartValue = parseFloat(document.getElementById(paramId).value);
+                isDraggingValue = false;
+                
+                // Clear any existing click timeout
+                if (clickTimeout) {
+                    clearTimeout(clickTimeout);
+                    clickTimeout = null;
+                }
+                
+                document.addEventListener('mousemove', handleValueMouseMove);
+                document.addEventListener('mouseup', handleValueMouseUp);
+            }
+            
+            function handleValueMouseMove(e) {
+                if (!draggedValue) return;
+                
+                // Check if we've moved enough to start dragging
+                if (!isDraggingValue && Math.abs(e.clientX - dragStartX) > 3) {
+                    isDraggingValue = true;
+                    draggedValue.classList.add('dragging');
+                    document.body.style.cursor = 'ew-resize';
+                }
+                
+                if (isDraggingValue) {
+                    dragValue(e);
+                }
+            }
+            
+            function handleValueMouseUp(e) {
+                const wasDragging = isDraggingValue;
+                
+                if (draggedValue) {
+                    draggedValue.classList.remove('dragging');
+                    document.body.style.cursor = '';
+                }
+                
+                draggedValue = null;
+                isDraggingValue = false;
+                document.removeEventListener('mousemove', handleValueMouseMove);
+                document.removeEventListener('mouseup', handleValueMouseUp);
+                
+                // If we weren't dragging, set up for potential click
+                if (!wasDragging) {
+                    clickTimeout = setTimeout(() => {
+                        clickTimeout = null;
+                    }, 200);
+                }
+            }
+            
+            function handleValueClick(e) {
+                // Only edit if we didn't just drag
+                if (!clickTimeout) return;
+                
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const field = e.target;
+                if (field.classList.contains('editing')) return;
+                
+                const paramId = field.dataset.param;
+                const currentValue = parseFloat(document.getElementById(paramId).value);
+                const min = parseFloat(field.dataset.min);
+                const max = parseFloat(field.dataset.max);
+                const step = parseFloat(field.dataset.step);
+                
+                // Create input element
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.className = 'parameter-value-input';
+                input.value = currentValue;
+                input.min = min;
+                input.max = max;
+                input.step = step;
+                
+                field.classList.add('editing');
+                field.appendChild(input);
+                input.focus();
+                input.select();
+                
+                // Handle input events
+                input.addEventListener('blur', () => finishEditing(field, input, paramId));
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        finishEditing(field, input, paramId);
+                    } else if (e.key === 'Escape') {
+                        e.preventDefault();
+                        input.value = currentValue;
+                        finishEditing(field, input, paramId);
+                    }
+                });
+                
+                // Prevent drag while editing
+                input.addEventListener('mousedown', (e) => e.stopPropagation());
+            }
+            
+            function finishEditing(field, input, paramId) {
+                const newValue = parseFloat(input.value);
+                const min = parseFloat(field.dataset.min);
+                const max = parseFloat(field.dataset.max);
+                
+                // Clamp value
+                const clampedValue = Math.max(min, Math.min(max, newValue));
+                
+                // Update the hidden input
+                document.getElementById(paramId).value = clampedValue;
+                
+                // Check if we need to update or create keyframe
+                const currentTime = currentFrame / totalFrames * duration;
+                const track = keyframeTracks[paramId];
+                
+                // Auto-keyframe: if track has any keyframes, automatically create/update keyframe at current time
+                if (track.keyframes.length > 0) {
+                    const keyframe = track.keyframes.find(kf => Math.abs(kf.time - currentTime) < 0.01);
+                    if (keyframe) {
+                        keyframe.value = clampedValue;
+                    } else {
+                        track.addKeyframe(currentTime, clampedValue, 'linear');
+                        updateKeyframeDisplay(paramId);
+                        updateKeyframeButtons();
+                    }
+                } else {
+                    // If no keyframes exist, just update the base value
+                    document.getElementById(paramId).value = clampedValue;
+                }
+                
+                // Remove input and update display
+                field.classList.remove('editing');
+                input.remove();
+                
+                updateParameterValues();
                 render();
             }
             
-            // Update value displays
-            document.querySelectorAll('input[type="range"]').forEach(input => {
-                input.addEventListener('input', function() {
-                    const valueDisplay = document.getElementById(this.id + 'Value');
-                    if (valueDisplay) {
-                        valueDisplay.textContent = this.value;
+            function dragValue(e) {
+                if (!draggedValue) return;
+                
+                const deltaX = e.clientX - dragStartX;
+                const paramId = draggedValue.dataset.param;
+                const min = parseFloat(draggedValue.dataset.min);
+                const max = parseFloat(draggedValue.dataset.max);
+                const step = parseFloat(draggedValue.dataset.step);
+                
+                // Calculate sensitivity based on range
+                const range = max - min;
+                const sensitivity = range / 200; // 200 pixels for full range
+                
+                let newValue = dragStartValue + (deltaX * sensitivity);
+                
+                // Round to step
+                newValue = Math.round(newValue / step) * step;
+                
+                // Clamp to range
+                newValue = Math.max(min, Math.min(max, newValue));
+                
+                // Update the hidden input
+                document.getElementById(paramId).value = newValue;
+                
+                // Update the display
+                updateParameterValues();
+                
+                // Check if we need to update or create keyframe
+                const currentTime = currentFrame / totalFrames * duration;
+                const track = keyframeTracks[paramId];
+                
+                // Auto-keyframe: if track has any keyframes, automatically create/update keyframe at current time
+                if (track.keyframes.length > 0) {
+                    const keyframe = track.keyframes.find(kf => Math.abs(kf.time - currentTime) < 0.01);
+                    if (keyframe) {
+                        keyframe.value = newValue;
+                    } else {
+                        track.addKeyframe(currentTime, newValue, 'linear');
+                        updateKeyframeDisplay(paramId);
+                        updateKeyframeButtons();
                     }
-                    if (!this.id.includes('grid')) {
-                        render();
-                    }
-                });
+                }
+                
+                render();
+            }
+            
+            window.clearAllKeyframes = function() {
+                for (const track of Object.values(keyframeTracks)) {
+                    track.keyframes = [];
+                }
+                updateAllKeyframes();
+                render();
+            }
+            
+            // Update value displays for grid controls
+            document.getElementById('gridX').addEventListener('input', function() {
+                document.getElementById('gridXDisplay').value = this.value;
             });
             
+            document.getElementById('gridY').addEventListener('input', function() {
+                document.getElementById('gridYDisplay').value = this.value;
+            });
+            
+            // Update hidden inputs when parameters change
             document.querySelectorAll('input[type="checkbox"]').forEach(input => {
                 input.addEventListener('change', render);
             });
             
-            document.getElementById('backgroundColor').addEventListener('change', render);
-            document.getElementById('particleColor').addEventListener('change', render);
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (e.target.tagName === 'INPUT' && e.target.type === 'text') return;
+                
+                switch(e.key) {
+                    case ' ':
+                        e.preventDefault();
+                        togglePlayback();
+                        break;
+                    case 'ArrowLeft':
+                        e.preventDefault();
+                        previousFrame();
+                        break;
+                    case 'ArrowRight':
+                        e.preventDefault();
+                        nextFrame();
+                        break;
+                    case 'Home':
+                        e.preventDefault();
+                        currentFrame = 0;
+                        render();
+                        break;
+                    case 'End':
+                        e.preventDefault();
+                        currentFrame = totalFrames - 1;
+                        render();
+                        break;
+                }
+            });
+            
+            // Tooltip functions
+            function showKeyframeTooltip(e, keyframe, paramId) {
+                const tooltip = document.getElementById('tooltip');
+                const rect = e.target.getBoundingClientRect();
+                
+                const timeStr = keyframe.time.toFixed(2) + 's';
+                const valueStr = keyframe.value.toFixed(2);
+                const easingStr = keyframe.easing || 'linear';
+                
+                tooltip.innerHTML = `Time: ${timeStr}<br>Value: ${valueStr}<br>Easing: ${easingStr}`;
+                tooltip.style.left = rect.left + rect.width / 2 + 'px';
+                tooltip.style.top = (rect.top - 10) + 'px';
+                tooltip.style.transform = 'translate(-50%, -100%)';
+                tooltip.style.display = 'block';
+                tooltip.classList.add('visible');
+            }
+            
+            function hideTooltip() {
+                const tooltip = document.getElementById('tooltip');
+                tooltip.classList.remove('visible');
+                setTimeout(() => {
+                    if (!tooltip.classList.contains('visible')) {
+                        tooltip.style.display = 'none';
+                    }
+                }, 200);
+            }
+            
+            // Easing context menu
+            let currentKeyframeContext = null;
+            
+            function showEasingMenu(e, paramId, index) {
+                const menu = document.getElementById('keyframeContextMenu');
+                const track = keyframeTracks[paramId];
+                const keyframe = track.keyframes[index];
+                
+                currentKeyframeContext = { paramId, index };
+                
+                // Update active state
+                menu.querySelectorAll('.context-menu-item').forEach(item => {
+                    item.classList.toggle('active', item.dataset.easing === (keyframe.easing || 'linear'));
+                });
+                
+                menu.style.left = e.clientX + 'px';
+                menu.style.top = e.clientY + 'px';
+                menu.style.display = 'block';
+                
+                // Close menu when clicking outside
+                document.addEventListener('click', closeEasingMenu);
+            }
+            
+            function closeEasingMenu() {
+                document.getElementById('keyframeContextMenu').style.display = 'none';
+                document.removeEventListener('click', closeEasingMenu);
+            }
+            
+            // Set up easing menu items
+            document.querySelectorAll('.context-menu-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (currentKeyframeContext) {
+                        const { paramId, index } = currentKeyframeContext;
+                        const track = keyframeTracks[paramId];
+                        const keyframe = track.keyframes[index];
+                        
+                        if (keyframe) {
+                            keyframe.easing = e.target.dataset.easing;
+                            updateKeyframeDisplay(paramId);
+                            render();
+                        }
+                    }
+                    closeEasingMenu();
+                });
+            });
+            
+            // Keyframe edit modal
+            let editingKeyframe = null;
+            
+            window.openKeyframeEdit = function(paramId, index) {
+                const track = keyframeTracks[paramId];
+                const keyframe = track.keyframes[index];
+                
+                if (!keyframe) return;
+                
+                editingKeyframe = { paramId, index };
+                
+                const modal = document.getElementById('keyframeEditModal');
+                const timeInput = document.getElementById('keyframeEditTime');
+                const valueInput = document.getElementById('keyframeEditValue');
+                
+                timeInput.value = keyframe.time.toFixed(2);
+                timeInput.max = duration;
+                
+                valueInput.value = keyframe.value;
+                valueInput.min = track.min;
+                valueInput.max = track.max;
+                valueInput.step = track.paramId === 'noiseScale' ? '0.0001' : 
+                                 track.paramId.includes('Speed') || track.paramId.includes('Freq') || track.paramId === 'particleSize' ? '0.1' : '1';
+                
+                modal.style.display = 'block';
+                timeInput.focus();
+                timeInput.select();
+            }
+            
+            window.closeKeyframeEdit = function() {
+                document.getElementById('keyframeEditModal').style.display = 'none';
+                editingKeyframe = null;
+            }
+            
+            window.applyKeyframeEdit = function() {
+                if (!editingKeyframe) return;
+                
+                const { paramId, index } = editingKeyframe;
+                const track = keyframeTracks[paramId];
+                const keyframe = track.keyframes[index];
+                
+                if (!keyframe) return;
+                
+                const newTime = parseFloat(document.getElementById('keyframeEditTime').value);
+                const newValue = parseFloat(document.getElementById('keyframeEditValue').value);
+                
+                // Validate and clamp values
+                keyframe.time = Math.max(0, Math.min(duration, newTime));
+                keyframe.value = Math.max(track.min, Math.min(track.max, newValue));
+                
+                // Re-sort keyframes
+                track.keyframes.sort((a, b) => a.time - b.time);
+                
+                updateKeyframeDisplay(paramId);
+                updateKeyframeButtons();
+                render();
+                closeKeyframeEdit();
+            }
+            
+            // Add tooltips for other UI elements
+            function initializeTooltips() {
+                // Keyframe buttons
+                document.querySelectorAll('.keyframe-button').forEach(button => {
+                    button.addEventListener('mouseenter', (e) => {
+                        const tooltip = document.getElementById('tooltip');
+                        const rect = e.target.getBoundingClientRect();
+                        
+                        tooltip.innerHTML = 'Click to add/remove keyframe at current time';
+                        tooltip.style.left = rect.left + rect.width / 2 + 'px';
+                        tooltip.style.top = (rect.top - 5) + 'px';
+                        tooltip.style.transform = 'translate(-50%, -100%)';
+                        tooltip.style.display = 'block';
+                        tooltip.classList.add('visible');
+                    });
+                    
+                    button.addEventListener('mouseleave', hideTooltip);
+                });
+                
+                // Value fields
+                document.querySelectorAll('.parameter-value-field').forEach(field => {
+                    field.addEventListener('mouseenter', (e) => {
+                        const tooltip = document.getElementById('tooltip');
+                        const rect = e.target.getBoundingClientRect();
+                        
+                        tooltip.innerHTML = 'Click to type value<br>Drag left/right to adjust';
+                        tooltip.style.left = rect.left + rect.width / 2 + 'px';
+                        tooltip.style.top = (rect.top - 5) + 'px';
+                        tooltip.style.transform = 'translate(-50%, -100%)';
+                        tooltip.style.display = 'block';
+                        tooltip.classList.add('visible');
+                    });
+                    
+                    field.addEventListener('mouseleave', hideTooltip);
+                });
+            }
             
             // Initialize
             updateCanvasSettings();
             initializeTimelineControls();
+            initializeResizeObserver();
+            initializePanelDivider();
+            initializeValueDragging();
+            initializeTooltips();
+            updateZoom();
+            updateAllKeyframes();
+            
+            // Also update zoom on window resize
+            window.addEventListener('resize', () => {
+                const zoomSelect = document.getElementById('zoomLevel');
+                if (zoomSelect.value === 'fit') {
+                    updateZoom();
+                }
+            });
         })();
     </script>
 </body>
